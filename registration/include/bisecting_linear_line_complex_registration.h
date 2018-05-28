@@ -17,7 +17,7 @@
 #include "point_cloud_registration.h"
 
 template <typename PointT>
-class BisectorRegistration : public Registration<PointT>	{
+class BisectingLinearLineComplexRegistration : public Registration<PointT>	{
 	private:
 		Eigen::MatrixXd g;
 		Eigen::MatrixXd m;
@@ -55,10 +55,10 @@ class BisectorRegistration : public Registration<PointT>	{
 	protected:
 
 	public:
-		BisectorRegistration() : Registration<PointT>()	{
+		BisectingLinearLineComplexRegistration() : Registration<PointT>()	{
 
 		}
-		~BisectorRegistration()	{
+		~BisectingLinearLineComplexRegistration()	{
 
 		}
 
@@ -72,7 +72,7 @@ class BisectorRegistration : public Registration<PointT>	{
 							linesP, linesQ, crossGP, crossGQ, angles,
 							axis1;
 			Eigen::Vector3d srcPoint, dstPoint, srcPoint2, dstPoint2,
-							c, cBar, s, sBar, displacement;
+							c, cBar, s, sBar, displacement, temp;
 			double pbblc = 0.0, angle1 = 0.0, angle2 = 0.0, d = 0.0,
 				   phi1 = 0.0;
 
@@ -88,8 +88,8 @@ class BisectorRegistration : public Registration<PointT>	{
 
 				g.row(i) = (srcPoint + dstPoint) / 2.0;
 				m.row(i) = dstPoint - srcPoint;
-				W.row(i) = m.row(i).dot(g.row(i));
-				E.row(i) = m.row(i).cross(g.row(i));
+				W.row(i)(0) = m.row(i).dot(g.row(i));
+				E.row(i) = Eigen::Vector3d(m.row(i)).cross(Eigen::Vector3d(g.row(i)));
 			}
 
 			mTrans = m.transpose();
@@ -99,7 +99,7 @@ class BisectorRegistration : public Registration<PointT>	{
 			F = Eigen::MatrixXd::Zero(N, 1);
 
 			for(int i = 0; i < N; ++i)	{
-				F.row(i) = (g.row(i) + cBar.transpose()).dot(g.row(i));
+				F.row(i)(0) = (g.row(i) + cBar.transpose()).dot(g.row(i));
 			}
 
 			c = -1 * ((ETrans * E).inverse()) * ETrans * F;
@@ -119,8 +119,7 @@ class BisectorRegistration : public Registration<PointT>	{
 				// convert PCL point to Eigen Vector3d
 				srcPoint << srcCorrPointCloud->points[i].x, srcCorrPointCloud->points[i].y, srcCorrPointCloud->points[i].z;
 				dstPoint << dstCorrPointCloud->points[i].x, dstCorrPointCloud->points[i].y, dstCorrPointCloud->points[i].z;
-
-				d = d + (double)((dstPoint - srcPoint) * s / s.norm());
+				d += ((dstPoint - srcPoint).dot(s) / s.norm());
 			}
 
 			d = d / N;
@@ -134,11 +133,13 @@ class BisectorRegistration : public Registration<PointT>	{
 
 				linesP.row(i) = (srcPoint2 - srcPoint) / (srcPoint2 - srcPoint).norm();
 				linesQ.row(i) = (dstPoint2 - dstPoint) / (dstPoint2 - dstPoint).norm();
-				crossGP.row(i) = linesP.row(i).cross(s);
-				crossGQ.row(i) = linesQ.row(i).cross(s);
+				crossGP.row(i) = Eigen::Vector3d(linesP.row(i)).cross(s);
+				crossGQ.row(i) = Eigen::Vector3d(linesQ.row(i)).cross(s);
+				// crossGP.row(i) = linesP.row(i).cross(s);
+				// crossGQ.row(i) = linesQ.row(i).cross(s);
 				crossGP.row(i) = crossGP.row(i) / crossGP.row(i).norm();
 				crossGQ.row(i) = crossGQ.row(i) / crossGQ.row(i).norm();
-				angles.row(i) = (acos(crossGP.row(i).dot(crossGQ.row(i)))) * 180.0 / M_PI;
+				angles.row(i)(0) = (acos(crossGP.row(i).dot(crossGQ.row(i)))) * 180.0 / M_PI;
 				angle1 = angle1 + crossGP.row(i).dot(crossGQ.row(i));
 				angle2 = angle2 + crossGP.row(i).norm() * crossGQ.row(i).norm();
 			}
@@ -154,13 +155,9 @@ class BisectorRegistration : public Registration<PointT>	{
 		}
 
 		bool pointTransformation(PointT& point)	{
-
+			point = Registration<PointT>::rotationMatrix * point + Registration<PointT>::translationVector;
+			return true;
 		}
-
-		bool pointCloudTransformation(typename pcl::PointCloud<PointT>::Ptr pointCloud)	{
-
-		}
-
 };
 
 	
