@@ -192,8 +192,8 @@ class DistanceGeometryRegistration : public Registration<PointT>	{
 				return false;
 			}
 			// Convert all correspondence points to MM
-			millimeterToMeter<PointT>(srcCorrPointCloud);
-			millimeterToMeter<PointT>(destCorrPointCloud);
+			// millimeterToMeter<PointT>(srcCorrPointCloud);
+			// millimeterToMeter<PointT>(destCorrPointCloud);
 
 			// Local variables and constants
 			int N = destCorrPointCloud->size();
@@ -381,8 +381,8 @@ class DistanceGeometryRegistration : public Registration<PointT>	{
 			// 	std::cout << std::setprecision(10) << "pq:\n" << pq << "\n\n";
 			// #endif
 			// Convert all points back to millimeter
-			meterToMillimeter<PointT>(srcCorrPointCloud);
-			meterToMillimeter<PointT>(destCorrPointCloud);
+			// meterToMillimeter<PointT>(srcCorrPointCloud);
+			// meterToMillimeter<PointT>(destCorrPointCloud);
 			// Final step: Since the when performing transformation, the equation is:
 			// TransformationMatrix*InverseReferenceMatrix*distanceCoordinate
 			// We will make TransformationMatrix = TransformationMatrix * InverseReferenceMatrix
@@ -397,7 +397,7 @@ class DistanceGeometryRegistration : public Registration<PointT>	{
 				return false;
 			}
 			// Convert all points to meter
-			millimeterToMeter<PointT>(pointCloud);
+			// millimeterToMeter<PointT>(pointCloud);
 
 			// For every point from point cloud 2, map it onto point cloud 1 coordinate
 			Eigen::Vector3d point;
@@ -423,14 +423,14 @@ class DistanceGeometryRegistration : public Registration<PointT>	{
 			}
 
 			// Convert all points to millimeter
-			meterToMillimeter<PointT>(pointCloud);
+			// meterToMillimeter<PointT>(pointCloud);
 
 			return true;
 		}
 
 		void pointTransformation(PointT& point)	{
 			// Convert all points to meter
-			millimeterToMeter<PointT>(point);
+			// millimeterToMeter<PointT>(point);
 
 			Eigen::Vector3d eigenPoint;
 			Eigen::VectorXd distanceCoordinate(5), registrationVector(5);
@@ -454,7 +454,7 @@ class DistanceGeometryRegistration : public Registration<PointT>	{
 			point.z = temp(5); 
 
 			// Convert all points to millimeter
-			meterToMillimeter<PointT>(point);
+			// meterToMillimeter<PointT>(point);
 		}
 
 		// Compute the registration error
