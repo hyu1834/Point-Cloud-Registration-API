@@ -1,0 +1,43 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
+PROJECT(PointCloudRegistrationAPI-0.0.1)
+
+# Find Required Libraries
+FIND_PACKAGE(PCL 1.7.1 REQUIRED)
+IF(NOT "${PCL_LIBRARIES}" STREQUAL "")
+	LIST(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
+ENDIF()
+
+# Include Libraries Directory
+INCLUDE_DIRECTORIES(${PCL_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Eigen_INCLUDE_DIRS})
+
+# Link Libraries
+LINK_DIRECTORIES(${PCL_LIBRARY_DIRS})
+
+# Add Libraries Definition
+ADD_DEFINITIONS(${PCL_DEFINITIONS})
+ADD_DEFINITIONS(-std=c++0x)
+
+ADD_SUBDIRECTORY(registration)
+ADD_SUBDIRECTORY(example)
+
+# # Get All Header Files
+# INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include/)
+# FILE(GLOB_RECURSE project_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+
+# # Get All Source Files
+# FILE(GLOB_RECURSE project_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+# SET(project_FORMS "${CMAKE_CURRENT_SOURCE_DIR}/forms/mainwindow.ui")
+
+# QT5_WRAP_CPP(project_HEADERS_MOC ${project_HEADERS})
+# QT5_WRAP_UI(project_FORMS_HEADERS ${project_FORMS})
+
+# ADD_EXECUTABLE(PCRUDG ${project_SOURCES} ${project_HEADERS_MOC} ${project_FORMS_HEADERS})
+
+# TARGET_LINK_LIBRARIES(PCRUDG
+# 					  ${Qt5_LIBRARIES} 
+# 					  ${PCL_LIBRARIES}
+# 					  ${OPENGL_LIBRARIES}
+# 					  ${GLUT_LIBRARY}
+# 					  # ${OpenCV_LIBRARIES}
+# 					  )
