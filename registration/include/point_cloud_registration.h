@@ -101,9 +101,9 @@ class Registration	{
 		}
 
 		virtual bool pointCloudTransformation(typename pcl::PointCloud<PointT>::Ptr pointCloud)	{
-			if(pointCloud == NULL)	{
+			if(pointCloud == NULL || pointCloud->size() < 1)	{
 				return false;
-			}			
+			}
 
 			for(int i = 0; i < pointCloud->size(); i++)	{
 				Eigen::Vector3d temp(pointCloud->points[i].x, pointCloud->points[i].y, pointCloud->points[i].z);
