@@ -39,15 +39,15 @@ class BisectingLinearLineComplexRegistration : public Registration<PointT>	{
 
 			Eigen::MatrixXd transformation = Eigen::MatrixXd::Zero(3, 3);
 
-			transformation << 2.0 * (pow(axis(1), 2) - 1) * pow2SinTheta + 1,
-							  2.0 * sinThetaDiv2 * (axis(2) * axis(1) * sinThetaDiv2 - axis(3) * cosThetaDiv2),
-							  2.0 * sinThetaDiv2 * (axis(3) * axis(1) * sinThetaDiv2 + axis(2) * cosThetaDiv2),
-							  2.0 * sinThetaDiv2 * (axis(1) * axis(2) * sinThetaDiv2 + axis(3) * cosThetaDiv2),
-							  2.0 * (pow(axis(2), 2) - 1) * pow2SinTheta + 1,
-							  2.0 * sinThetaDiv2 * (axis(3) * axis(2) * sinThetaDiv2 - axis(1) * cosThetaDiv2),
-							  2.0 * sinThetaDiv2 * (axis(1) * axis(3) * sinThetaDiv2 - axis(2) * cosThetaDiv2),
-							  2.0 * sinThetaDiv2 * (axis(2) * axis(3) * sinThetaDiv2 + axis(1) * cosThetaDiv2),
-							  2.0 * (pow(axis(3), 2) - 1) * pow2SinTheta + 1;
+			transformation << 2.0 * (pow(axis(0), 2) - 1) * pow2SinTheta + 1,
+							  2.0 * sinThetaDiv2 * (axis(2-1) * axis(0) * sinThetaDiv2 - axis(3-1) * cosThetaDiv2),
+							  2.0 * sinThetaDiv2 * (axis(3-1) * axis(0) * sinThetaDiv2 + axis(2-1) * cosThetaDiv2),
+							  2.0 * sinThetaDiv2 * (axis(0) * axis(2-1) * sinThetaDiv2 + axis(3-1) * cosThetaDiv2),
+							  2.0 * (pow(axis(2-1), 2) - 1) * pow2SinTheta + 1,
+							  2.0 * sinThetaDiv2 * (axis(3-1) * axis(2-1) * sinThetaDiv2 - axis(0) * cosThetaDiv2),
+							  2.0 * sinThetaDiv2 * (axis(0) * axis(3-1) * sinThetaDiv2 - axis(2-1) * cosThetaDiv2),
+							  2.0 * sinThetaDiv2 * (axis(2-1) * axis(3-1) * sinThetaDiv2 + axis(0) * cosThetaDiv2),
+							  2.0 * (pow(axis(3-1), 2) - 1) * pow2SinTheta + 1;
 
 			return transformation;
 		}
@@ -147,9 +147,16 @@ class BisectingLinearLineComplexRegistration : public Registration<PointT>	{
 			phi1 = acos(angle1 / angle2) * 180.0 / M_PI;
 			angle1 = phi1;
 
-			Registration<PointT>::translationVector = -d * s;
+			Registration<PointT>::translationVector = d * s;
 
 			Registration<PointT>::rotationMatrix = rodriguezEquation(s, angle1);
+
+			std::cout << "Angle: " << angle1 << std::endl << 
+						 "Axis: " << s << std::endl <<
+						 "Translation: " << d << std::endl <<
+						 "Rotation: " << Registration<PointT>::rotationMatrix << std::endl <<
+						 "Translation: " << Registration<PointT>::translationVector << std::endl;
+
 
 			return true;
 		}
