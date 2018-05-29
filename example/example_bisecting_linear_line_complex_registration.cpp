@@ -27,25 +27,32 @@ int main(int argc, char** argv)	{
 	importPointCloud<pcl::PointXYZRGB>(argv[1], sourceCorrespondence);
 	importPointCloud<pcl::PointXYZRGB>(argv[2], targetCorrespondence);
 
-	// If have source point cloud
-	if(argc == 4)	{
-		sourcePointCloud(new pcl::PointCloud<pcl::PointXYZRGB>());
-		importPointCloud(argv[3], sourcePointCloud);
-	}
-
 	BisectingLinearLineComplexRegistration<pcl::PointXYZRGB>* bllcr = new BisectingLinearLineComplexRegistration<pcl::PointXYZRGB>();
 	if(!bllcr->computeTransformation(sourceCorrespondence, targetCorrespondence))	{
 		std::cerr << "Error: Unable to compute transformation\n";
 		return -1;
 	}
 
+	if(!bllcr->pointCloudTransformation(sourceCorrespondence))	{
+		std::cerr << "Error: Unable to transform source correspondence\n";
+		return -1;
+	}
 
-	// if(!bllcr->pointCloudTransformation(sourcePointCloud))	{
-	// 	std::cerr << "Error: Unable to transform source point cloud\n";
-	// 	return -1;
-	// }
+	exportPointCloud<pcl::PointXYZRGB>("transformatedSourceCorrespondence.txt", sourceCorrespondence);
 
-	// exportPointCloud<pcl::PointXYZRGB>("transformatedPointCloud.txt", sourcePointCloud);
+
+	// If have source point cloud
+	if(argc == 4)	{
+		sourcePointCloud = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
+		importPointCloud<pcl::PointXYZRGB>(argv[3], sourcePointCloud);
+
+		if(!bllcr->pointCloudTransformation(sourcePointCloud))	{
+			std::cerr << "Error: Unable to transform source point cloud\n";
+			return -1;
+		}
+		exportPointCloud<pcl::PointXYZRGB>("transformatedSourcePointCloud.txt", sourcePointCloud);
+	}
+
 
 	delete bllcr;
 	return 0;
